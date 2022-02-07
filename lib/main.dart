@@ -1,0 +1,140 @@
+import 'package:fluent_ui/fluent_ui.dart';
+import 'package:flutter/foundation.dart';
+import 'package:ghosttears/widgets/bottom_bar.dart';
+import 'package:ghosttears/widgets/windows_buttons.dart';
+import 'package:system_theme/system_theme.dart';
+import 'package:url_strategy/url_strategy.dart';
+import 'package:flutter_acrylic/flutter_acrylic.dart' as flutter_acrylic;
+import 'package:bitsdojo_window/bitsdojo_window.dart';
+import 'package:provider/provider.dart';
+
+import 'theme.dart';
+
+import 'widgets/left_side.dart';
+import 'widgets/right_side.dart';
+
+const String appTitle = 'GHOSTTEARS';
+
+late bool darkMode;
+
+bool get isDesktop {
+  if (kIsWeb) return false;
+  return [
+    TargetPlatform.windows,
+    TargetPlatform.linux,
+    TargetPlatform.macOS,
+  ].contains(defaultTargetPlatform);
+}
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  setPathUrlStrategy();
+
+  // The platforms the plugin support (01/04/2021 - DD/MM/YYYY):
+  //   - Windows
+  //   - Web
+  //   - Android
+  if (defaultTargetPlatform == TargetPlatform.windows ||
+      defaultTargetPlatform == TargetPlatform.android ||
+      kIsWeb) {
+    darkMode = await SystemTheme.darkMode;
+    await SystemTheme.accentInstance.load();
+  } else {
+    darkMode = true;
+  }
+  if (!kIsWeb &&
+      [TargetPlatform.windows, TargetPlatform.linux]
+          .contains(defaultTargetPlatform)) {
+    flutter_acrylic.Window.hideWindowControls();
+
+    await flutter_acrylic.Window.initialize();
+
+    await flutter_acrylic.Window.setEffect(
+      effect: flutter_acrylic.WindowEffect.acrylic,
+      color: darkMode ? const Color(0xFF202020) : const Color(0xFFF3F3F3),
+    );
+  }
+
+  runApp(const GhostTears());
+
+  if (isDesktop) {
+    doWhenWindowReady(() {
+      final win = appWindow;
+      win.minSize = const Size(410, 540);
+      win.size = const Size(1255, 745);
+      win.alignment = Alignment.center;
+      win.title = appTitle;
+      win.show();
+    });
+  }
+}
+
+class GhostTears extends StatelessWidget {
+  const GhostTears({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) => AppTheme(),
+      builder: (context, _) {
+        final appTheme = context.watch<AppTheme>();
+        return FluentApp(
+          title: appTitle,
+          themeMode: appTheme.mode,
+          debugShowCheckedModeBanner: false,
+          initialRoute: '/',
+          routes: {'/': (_) => const MyHomePage()},
+          theme: ThemeData(
+            accentColor: appTheme.color,
+            brightness: appTheme.mode == ThemeMode.system
+                ? darkMode
+                    ? Brightness.dark
+                    : Brightness.light
+                : appTheme.mode == ThemeMode.dark
+                    ? Brightness.dark
+                    : Brightness.light,
+            visualDensity: VisualDensity.standard,
+            focusTheme: FocusThemeData(
+              glowFactor: is10footScreen() ? 2.0 : 0.0,
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({Key? key}) : super(key: key);
+
+  @override
+  _MyHomePageState createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        WindowTitleBarBox(
+          child: MoveWindow(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: const [SizedBox(), WindowButtons()],
+            ),
+          ),
+        ),
+        Expanded(
+          child: Row(
+            children: const [
+              LeftSide(),
+              RightSide(),
+            ],
+          ),
+        ),
+        const BottomBar(),
+      ],
+    );
+  }
+}
