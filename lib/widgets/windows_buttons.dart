@@ -1,8 +1,11 @@
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:ghosttears/utils/navigator.dart';
 
 class WindowButtons extends StatelessWidget {
-  const WindowButtons({Key? key}) : super(key: key);
+  const WindowButtons({this.showBackButton = true, Key? key}) : super(key: key);
+
+  final bool showBackButton;
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +33,16 @@ class WindowButtons extends StatelessWidget {
     );
 
     return Row(children: [
+      showBackButton
+          ? Tooltip(
+              message: FluentLocalizations.of(context).backButtonTooltip,
+              child: GoBackButton(
+                context,
+                colors: buttonColors,
+              ),
+            )
+          : const SizedBox(),
+      const Expanded(child: SizedBox()),
       Tooltip(
         message: FluentLocalizations.of(context).minimizeWindowTooltip,
         child: MinimizeWindowButton(colors: buttonColors),
@@ -53,4 +66,23 @@ class WindowButtons extends StatelessWidget {
       ),
     ]);
   }
+}
+
+class GoBackButton extends WindowButton {
+  final BuildContext context;
+
+  GoBackButton(this.context,
+      {Key? key,
+      WindowButtonColors? colors,
+      VoidCallback? onPressed,
+      bool? animate})
+      : super(
+            key: key,
+            colors: colors,
+            animate: animate ?? false,
+            iconBuilder: (buttonContext) => const Icon(
+                  FluentIcons.back,
+                  size: 12.0,
+                ),
+            onPressed: onPressed ?? () => context.popView(context));
 }

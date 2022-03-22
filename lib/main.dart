@@ -1,7 +1,8 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/foundation.dart';
-import 'package:ghosttears/widgets/bottom_bar.dart';
-import 'package:ghosttears/widgets/windows_buttons.dart';
+import 'package:ghosttears/providers/game_provider.dart';
+import 'package:ghosttears/screens/game_screen.dart';
+import 'package:ghosttears/screens/home_screen.dart';
 import 'package:system_theme/system_theme.dart';
 import 'package:url_strategy/url_strategy.dart';
 import 'package:flutter_acrylic/flutter_acrylic.dart' as flutter_acrylic;
@@ -9,9 +10,6 @@ import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:provider/provider.dart';
 
 import 'theme.dart';
-
-import 'widgets/left_side.dart';
-import 'widgets/right_side.dart';
 
 const String appTitle = 'GHOSTTEARS';
 
@@ -31,10 +29,6 @@ Future<void> main() async {
 
   setPathUrlStrategy();
 
-  // The platforms the plugin support (01/04/2021 - DD/MM/YYYY):
-  //   - Windows
-  //   - Web
-  //   - Android
   if (defaultTargetPlatform == TargetPlatform.windows ||
       defaultTargetPlatform == TargetPlatform.android ||
       kIsWeb) {
@@ -56,7 +50,15 @@ Future<void> main() async {
     );
   }
 
-  runApp(const GhostTears());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider<GameProvider>(
+            create: (context) => GameProvider()),
+      ],
+      child: const GhostTears(),
+    ),
+  );
 
   if (isDesktop) {
     doWhenWindowReady(() {
@@ -83,8 +85,11 @@ class GhostTears extends StatelessWidget {
           title: appTitle,
           themeMode: appTheme.mode,
           debugShowCheckedModeBanner: false,
-          initialRoute: '/',
-          routes: {'/': (_) => const MyHomePage()},
+          initialRoute: '/home',
+          routes: {
+            '/home': (_) => const HomeScreen(),
+            '/game': (_) => const GameScreen(),
+          },
           theme: ThemeData(
             accentColor: appTheme.color,
             brightness: appTheme.mode == ThemeMode.system
@@ -101,40 +106,6 @@ class GhostTears extends StatelessWidget {
           ),
         );
       },
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key}) : super(key: key);
-
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        WindowTitleBarBox(
-          child: MoveWindow(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [SizedBox(), WindowButtons()],
-            ),
-          ),
-        ),
-        Expanded(
-          child: Row(
-            children: const [
-              LeftSide(),
-              RightSide(),
-            ],
-          ),
-        ),
-        const BottomBar(),
-      ],
     );
   }
 }

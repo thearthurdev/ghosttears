@@ -23,14 +23,20 @@ class LeftSide extends StatelessWidget {
                     leading: CircleAvatar(
                       backgroundColor: Colors.white,
                       radius: 30.0,
+                      child: Icon(FluentIcons.drop_shape),
                     ),
-                    title: Text('Delords Arthur'),
-                    subtitle: Text('arthurdelords@gmail.com'),
+                    title: Text(
+                      'GHOSTTEARS',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    subtitle: Text('Don\'t get caught counting'),
                   ),
                   const SizedBox(height: 16.0),
                   const TextBox(
-                    prefix: Padding(
-                      padding: EdgeInsets.all(8.0),
+                    suffix: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 8.0),
                       child: Icon(FluentIcons.full_history),
                     ),
                     placeholder: 'Used words',

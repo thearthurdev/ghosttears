@@ -15,26 +15,12 @@ class CountdownTimer extends StatelessWidget {
           ),
         ),
         Align(
-          alignment: Alignment.bottomLeft,
+          alignment: Alignment.centerLeft,
           child: Padding(
             padding: EdgeInsets.only(left: 8.0),
             child: Text(
               'four',
-              style: TextStyle(fontSize: 80.0),
-            ),
-          ),
-        ),
-        Positioned(
-          right: 0.0,
-          top: -40.0,
-          child: Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Text(
-              '4',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 150.0,
-              ),
+              style: TextStyle(fontSize: 40.0),
             ),
           ),
         ),

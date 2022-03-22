@@ -1,71 +1,59 @@
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:ghosttears/providers/game_provider.dart';
+import 'package:provider/provider.dart';
 
-class RightSide extends StatelessWidget {
-  const RightSide({Key? key}) : super(key: key);
+class GameBoard extends StatelessWidget {
+  const GameBoard({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     double windowWidth = MediaQuery.of(context).size.width;
     double windowHeight = MediaQuery.of(context).size.height;
 
-    return Expanded(
-      child: Container(
-        margin: EdgeInsets.symmetric(
-          horizontal: windowWidth * 0.04,
-          vertical: windowHeight * 0.08,
-        ),
-        child: FittedBox(
-          alignment: Alignment.center,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
-              SizedBox(height: 8.0),
-              GhostTearsCard(
-                score: 10,
-              ),
-              GhostTearsCard(
-                score: 3,
-                userName: 'Sam',
-              ),
-              GhostTearsCard(
-                score: 5,
-                userName: 'Val',
-                isCurrentPlayer: true,
-              ),
-              GhostTearsCard(
-                score: 1,
-                userName: 'Joe',
-              ),
-              GhostTearsCard(
-                score: 9,
-                userName: 'Mante',
-              ),
-              GhostTearsCard(
-                score: 3,
-                userName: 'David',
-              ),
-              GhostTearsCard(
-                score: 5,
-                userName: 'Diabene',
-              ),
-            ],
+    return Consumer<GameProvider>(builder: (context, provider, child) {
+      return Expanded(
+        child: Container(
+          margin: EdgeInsets.symmetric(
+            horizontal: windowWidth * 0.04,
+            vertical: windowHeight * 0.08,
+          ),
+          child: FittedBox(
+            alignment: Alignment.center,
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                      SizedBox(height: 8.0),
+                      GhostTearsCard(
+                        playerScore: 10,
+                      ),
+                    ] +
+                    List.generate(provider.playerCount!, (int index) {
+                      return GhostTearsCard(
+                        playerID: provider.players![index].playerID,
+                        playerName: provider.players![index].playerName,
+                        playerScore: provider.players![index].playerScore,
+                      );
+                    })
+                ),
           ),
         ),
-      ),
-    );
+      );
+    });
   }
 }
 
 class GhostTearsCard extends StatelessWidget {
   const GhostTearsCard({
-    required this.score,
-    this.userName,
+    this.playerID,
+    this.playerName,
+    required this.playerScore,
     this.isCurrentPlayer = false,
     Key? key,
   }) : super(key: key);
 
-  final int? score;
-  final String? userName;
+  final int? playerID;
+  final String? playerName;
+  final int? playerScore;
   final bool isCurrentPlayer;
 
   @override
@@ -77,7 +65,7 @@ class GhostTearsCard extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          userName != null
+          playerName != null
               ? Container(
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -93,7 +81,9 @@ class GhostTearsCard extends StatelessWidget {
                     backgroundColor: Colors.white,
                     radius: 24.0,
                     child: Text(
-                      userName!.substring(0, 2),
+                      playerName!.length > 1
+                          ? playerName!.substring(0, 2)
+                          : playerName!,
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                       ),
@@ -104,16 +94,16 @@ class GhostTearsCard extends StatelessWidget {
           SizedBox(width: isCurrentPlayer ? 12.0 : 16.0),
           Row(
             children: [
-              GhostLetter(score! >= 1 ? 'G' : ''),
-              GhostLetter(score! >= 2 ? 'H' : ''),
-              GhostLetter(score! >= 3 ? 'O' : ''),
-              GhostLetter(score! >= 4 ? 'S' : ''),
-              GhostLetter(score! >= 5 ? 'T' : ''),
-              GhostLetter(score! >= 6 ? 'T' : ''),
-              GhostLetter(score! >= 7 ? 'E' : ''),
-              GhostLetter(score! >= 8 ? 'A' : ''),
-              GhostLetter(score! >= 9 ? 'R' : ''),
-              GhostLetter(score! >= 10 ? 'S' : ''),
+              GhostLetter(playerScore! >= 1 ? 'G' : ''),
+              GhostLetter(playerScore! >= 2 ? 'H' : ''),
+              GhostLetter(playerScore! >= 3 ? 'O' : ''),
+              GhostLetter(playerScore! >= 4 ? 'S' : ''),
+              GhostLetter(playerScore! >= 5 ? 'T' : ''),
+              GhostLetter(playerScore! >= 6 ? 'T' : ''),
+              GhostLetter(playerScore! >= 7 ? 'E' : ''),
+              GhostLetter(playerScore! >= 8 ? 'A' : ''),
+              GhostLetter(playerScore! >= 9 ? 'R' : ''),
+              GhostLetter(playerScore! >= 10 ? 'S' : ''),
             ],
           ),
         ],
@@ -130,10 +120,12 @@ class GhostLetter extends StatelessWidget {
 
   const GhostLetter(
     this.letter, {
+    this.isUserCard = false,
     Key? key,
   }) : super(key: key);
 
   final String letter;
+  final bool isUserCard;
 
   @override
   Widget build(BuildContext context) {
@@ -144,7 +136,7 @@ class GhostLetter extends StatelessWidget {
       width: 68.0,
       height: 68.0,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isUserCard ? Colors.white : const FluentApp().theme?.accentColor,
         borderRadius: BorderRadius.circular(4.0),
         border: Border.all(color: const Color(0xFFE5E5E5), width: 1.0),
       ),
