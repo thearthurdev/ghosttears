@@ -13,6 +13,13 @@ class BottomBar extends StatelessWidget {
       decoration: BoxDecoration(
         border: Border.all(color: const Color(0xFFE5E5E5), width: 1.0),
         color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.08),
+            offset: const Offset(0.0, -0.4),
+            blurRadius: 4.0,
+          ),
+        ],
       ),
       child: Row(
         children: const [

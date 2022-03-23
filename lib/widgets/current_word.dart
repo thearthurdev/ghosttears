@@ -10,7 +10,7 @@ class CurrentWord extends StatelessWidget {
     return Consumer<GameProvider>(builder: (context, provider, child) {
       return Container(
         // color: Colors.green,
-        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 14.0),
+        padding: const EdgeInsets.fromLTRB(12.0, 4.0, 12.0, 8.0),
         child: Stack(
           children: [
             const Align(

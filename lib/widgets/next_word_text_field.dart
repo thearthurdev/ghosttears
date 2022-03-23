@@ -1,6 +1,7 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:ghosttears/providers/game_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:system_theme/system_theme.dart';
 
 class NextWordTextField extends StatefulWidget {
   const NextWordTextField({Key? key}) : super(key: key);
@@ -16,7 +17,7 @@ class _NextWordTextFieldState extends State<NextWordTextField> {
   @override
   void initState() {
     _controller = TextEditingController();
-    _focusNode = FocusNode();
+    _focusNode = context.read<GameProvider>().focusNode;
 
     super.initState();
   }
@@ -33,9 +34,12 @@ class _NextWordTextFieldState extends State<NextWordTextField> {
           autofocus: true,
           maxLength: 1,
           header: 'Next Letter',
-          maxLengthEnforced: true,
-
-          // textInputAction: //TODO: Live update all other players with input of current player in online multiplayer,
+          cursorWidth: 2.0,
+          cursorColor: SystemTheme.accentInstance.accent.toAccentColor(),
+          style: const TextStyle(
+            fontSize: 28.0,
+            fontWeight: FontWeight.bold,
+          ),
           onSubmitted: (entry) {
             if (entry.isNotEmpty) {
               provider.setCurrentWord(entry);
@@ -67,3 +71,6 @@ class _NextWordTextFieldState extends State<NextWordTextField> {
     });
   }
 }
+
+
+//TODO: Live update all other players with input of current player in online multiplayer,

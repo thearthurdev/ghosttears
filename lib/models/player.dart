@@ -4,10 +4,10 @@ class Player {
   int? playerScore;
   bool? isGameOver;
 
-  Player(
+  Player({
     this.playerID,
     this.playerName,
-    this.playerScore, {
-    this.isGameOver,
+    this.playerScore = 0,
+    this.isGameOver = false,
   });
 }

@@ -26,6 +26,7 @@ class GameProvider extends ChangeNotifier {
   List<String>? _usedWords;
   String? _currentWord;
   bool? _isGamePaused;
+  final FocusNode _focusNode = FocusNode();
 
   int? get playerCount => _playerCount;
   int? get currentPlayer => _currentPlayer;
@@ -33,11 +34,16 @@ class GameProvider extends ChangeNotifier {
   List<String>? get usedWords => _usedWords;
   String? get currentWord => _currentWord;
   bool? get isGamePaused => _isGamePaused;
+  FocusNode get focusNode => _focusNode;
+
+  void resetFocus() {
+    _focusNode.requestFocus();
+  }
 
   void startNewGame() {
     setGamePaused(state: false);
     generateTestPlayers();
-    resetCurrentWord();
+    resetGame();
     setCurrentPlayer(index: 0);
   }
 
@@ -51,11 +57,30 @@ class GameProvider extends ChangeNotifier {
     _players = List.generate(
       _playerCount!,
       (index) => Player(
-        index,
-        testPlayers.elementAt(Random().nextInt(testPlayers.length)),
-        0,
+        playerID: index,
+        playerName: testPlayers.elementAt(Random().nextInt(testPlayers.length)),
       ),
     );
+  }
+
+  void resetGame() {
+    resetCurrentWord();
+    resetUsedWords();
+    resetPenalizedPlayer();
+    resetPlayers();
+    setCurrentPlayer(index: 0);
+    resetFocus();
+  }
+
+  void resetPlayers() {
+    _players = [];
+    generateTestPlayers();
+  }
+
+  void resetPenalizedPlayer() {
+    _penalizedPlayer = 0;
+
+    notifyListeners();
   }
 
   void resetCurrentWord() {
@@ -64,7 +89,15 @@ class GameProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void resetUsedWords() {
+    _usedWords = null;
+
+    notifyListeners();
+  }
+
   void setCurrentWord(String? newLetter) {
+    setPenalizedPlayer();
+
     if (_currentWord != null) {
       _currentWord = _currentWord! + newLetter!;
     } else {
@@ -76,16 +109,24 @@ class GameProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setCurrentPlayer({int? index, bool? isRoundOver}) {
+  void setCurrentPlayer({int? index}) {
     if (index != null) {
-      _currentPlayer = index;
+      if (_players![index].isGameOver != true) {
+        _currentPlayer = index;
+      }
     } else {
-      if (isRoundOver == true ||
-          currentPlayer == null ||
-          _currentPlayer == _playerCount! - 1) {
-        _currentPlayer = 0;
+      int nextPlayer =
+          _currentPlayer! == _playerCount! - 1 ? 0 : _currentPlayer! + 1;
+
+      if (_players![nextPlayer].isGameOver == true) {
+        _currentPlayer = nextPlayer;
+        setCurrentPlayer();
       } else {
-        _currentPlayer = _currentPlayer! + 1;
+        if (_currentPlayer == null) {
+          _currentPlayer = 0;
+        } else {
+          _currentPlayer = nextPlayer;
+        }
       }
     }
 
@@ -103,42 +144,53 @@ class GameProvider extends ChangeNotifier {
   }
 
   void markCompleteWord() {
-    addToLastPlayerScore();
+    addToPenalizedPlayerScore();
     setCurrentPlayer(index: _penalizedPlayer);
     addToUsedWords();
     resetCurrentWord();
+    resetFocus();
   }
 
   void markWrongWord() {
-    addToLastPlayerScore();
+    addToPenalizedPlayerScore();
     setCurrentPlayer(index: _penalizedPlayer);
-    addToUsedWords();
+    // addToUsedWords();
     resetCurrentWord();
+    resetFocus();
   }
 
-  void addToLastPlayerScore() {
-    _penalizedPlayer =
-        currentPlayer! == 0 ? _playerCount! - 1 : _currentPlayer! - 1;
+  void setPenalizedPlayer() {
+    _penalizedPlayer = _currentPlayer;
+  }
 
+  void addToPenalizedPlayerScore() {
     int oldScore = _players!.elementAt(_penalizedPlayer!).playerScore!;
-    if (oldScore < 10) {
-      int newScore = oldScore + 1;
+    int newScore = oldScore == 10 ? oldScore : oldScore + 1;
 
-      _players!.elementAt(_penalizedPlayer!).playerScore = newScore;
+    _players!.elementAt(_penalizedPlayer!).playerScore = newScore;
 
-      if (newScore == 10) {
-        _players!.elementAt(_penalizedPlayer!).isGameOver = true;
-      }
+    if (newScore == 10) {
+      _players!.elementAt(_penalizedPlayer!).isGameOver = true;
+
+      notifyListeners();
+      
+      setCurrentPlayer();
+      setPenalizedPlayer();
     }
 
     notifyListeners();
   }
 
   void addToUsedWords() {
-    _usedWords ??= [];
-    _usedWords!.add(_currentWord!);
+    if (_currentWord != null) {
+      _usedWords ??= [];
+      _usedWords!.add(_currentWord!);
+    }
+
+    notifyListeners();
   }
 }
 
 
 // TODO: Ability to click on a player name and perform an action on that specific player 
+// TODO: Pause game on new start

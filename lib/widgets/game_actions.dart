@@ -15,42 +15,33 @@ class GameActions extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              IconButton(
-                icon: const Icon(
-                  FluentIcons.cancel,
-                  size: 16.0,
-                ),
-                onPressed: () {
-                  provider.markWrongWord();
-                },
+              const GameActionButton(
+                icon: FluentIcons.undo,
+                tooltip: 'Undo previous action',
               ),
-              const SizedBox(width: 12.0),
-              IconButton(
-                icon: const Icon(
-                  FluentIcons.accept,
-                  size: 16.0,
-                ),
-                onPressed: () {
-                  provider.markCompleteWord();
-                },
+              GameActionButton(
+                icon: FluentIcons.cancel,
+                tooltip: 'Mark word as wrong',
+                onPressed: () => provider.markWrongWord(),
               ),
-              const SizedBox(width: 12.0),
-              const PlayStateTimerButton(),
-              const SizedBox(width: 12.0),
-              IconButton(
-                icon: const Icon(
-                  FluentIcons.stop,
-                  size: 16.0,
-                ),
-                onPressed: () {},
+              GameActionButton(
+                icon: FluentIcons.accept,
+                tooltip: 'Mark word as complete',
+                onPressed: () => provider.markCompleteWord(),
               ),
-              const SizedBox(width: 12.0),
-              IconButton(
-                icon: const Icon(
-                  FluentIcons.reset,
-                  size: 16.0,
-                ),
-                onPressed: () {},
+              const GamePlayStateTimerButton(),
+              const GameActionButton(
+                icon: FluentIcons.forward,
+                tooltip: 'Stop the game',
+              ),
+              GameActionButton(
+                icon: FluentIcons.reset,
+                tooltip: 'Reset the game',
+                onPressed: () => provider.resetGame(),
+              ),
+              const GameActionButton(
+                icon: FluentIcons.more_vertical,
+                tooltip: 'More actions',
               ),
             ],
           ),
@@ -60,37 +51,78 @@ class GameActions extends StatelessWidget {
   }
 }
 
-class PlayStateTimerButton extends StatelessWidget {
-  const PlayStateTimerButton({
+class GameActionButton extends StatelessWidget {
+  const GameActionButton({
+    this.icon,
+    this.iconSize = 16.0,
+    this.onPressed,
+    this.tooltip,
+    Key? key,
+  }) : super(key: key);
+
+  final IconData? icon;
+  final double? iconSize;
+  final VoidCallback? onPressed;
+  final String? tooltip;
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: tooltip,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 6.0),
+        child: IconButton(
+          icon: Icon(
+            icon!,
+            size: iconSize,
+          ),
+          onPressed: onPressed,
+        ),
+      ),
+    );
+  }
+}
+
+class GamePlayStateTimerButton extends StatelessWidget {
+  const GamePlayStateTimerButton({
     Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Consumer<GameProvider>(builder: (context, provider, child) {
-      return Stack(
-        children: [
-          const Positioned(
-            top: 1.4,
-            left: 2.0,
-            child: ProgressRing(
-              backwards: true,
-              // value: 25.0,
-            ),
+      return Tooltip(
+        message: provider.isGamePaused == true
+            ? 'Unpause the timer'
+            : 'Pause the timer',
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 6.0),
+          child: Stack(
+            children: [
+              const Positioned(
+                top: 2.0,
+                left: 2.0,
+                child: ProgressRing(
+                  backwards: true,
+                  // value: 25.0,
+                ),
+              ),
+              IconButton(
+                style:
+                    ButtonStyle(shape: ButtonState.all(const CircleBorder())),
+                icon: Icon(
+                  provider.isGamePaused == true
+                      ? FluentIcons.play
+                      : FluentIcons.pause,
+                  size: 24.0,
+                ),
+                onPressed: () {
+                  provider.setGamePaused();
+                },
+              ),
+            ],
           ),
-          IconButton(
-            style: ButtonStyle(shape: ButtonState.all(const CircleBorder())),
-            icon: Icon(
-              provider.isGamePaused == true
-                  ? FluentIcons.pause
-                  : FluentIcons.play,
-              size: 24.0,
-            ),
-            onPressed: () {
-              provider.setGamePaused();
-            },
-          ),
-        ],
+        ),
       );
     });
   }
