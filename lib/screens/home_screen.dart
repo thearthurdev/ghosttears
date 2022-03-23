@@ -18,7 +18,6 @@ class HomeScreen extends StatelessWidget {
             maxWidth: 260.0,
           ),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Text(
@@ -32,7 +31,7 @@ class HomeScreen extends StatelessWidget {
               Combobox<int>(
                 placeholder: const Text('Select number of players'),
                 isExpanded: true,
-                items: [2, 3, 4, 5]
+                items: [2, 3, 4, 5, 6]
                     .map((e) => ComboboxItem<int>(
                           value: e,
                           child: e > 1
@@ -53,7 +52,7 @@ class HomeScreen extends StatelessWidget {
                   child: const Text('Play'),
                   onPressed: () {
                     if (provider.playerCount != null) {
-                      provider.startGame();
+                      provider.startNewGame();
                       context.navigate(const GameScreen());
                     } else {
                       showDialog(

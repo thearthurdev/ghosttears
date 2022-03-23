@@ -16,7 +16,7 @@ class GameScreen extends StatelessWidget {
           Expanded(
             child: Row(
               children: const [
-                LeftSide(),
+                SideBar(),
                 GameBoard(),
               ],
             ),

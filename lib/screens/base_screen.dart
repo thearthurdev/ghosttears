@@ -1,6 +1,6 @@
 import 'package:bitsdojo_window/bitsdojo_window.dart';
-import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:ghosttears/widgets/windows_buttons.dart';
 
 class BaseScreen extends StatelessWidget {
@@ -16,6 +16,7 @@ class BaseScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      height: kToolbarHeight,
       color: kIsWeb ? const Color(0xFFF3F3F3) : null,
       child: Column(
         children: [
