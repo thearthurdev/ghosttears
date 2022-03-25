@@ -1,13 +1,13 @@
 class Player {
   final int? playerID;
-  final String? playerName;
+  String? playerName;
   int? playerScore;
-  bool? isGameOver;
+  bool? isPlayerGameOver;
 
   Player({
     this.playerID,
     this.playerName,
     this.playerScore = 0,
-    this.isGameOver = false,
+    this.isPlayerGameOver = false,
   });
 }

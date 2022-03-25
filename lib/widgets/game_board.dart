@@ -31,7 +31,8 @@ class GameBoard extends StatelessWidget {
                     return GhostTearsCard(
                       player: provider.players![index],
                     );
-                  }),
+                  }) +
+                  [],
             ),
           ),
         ),

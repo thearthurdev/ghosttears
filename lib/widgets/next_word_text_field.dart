@@ -44,7 +44,7 @@ class _NextWordTextFieldState extends State<NextWordTextField> {
             if (entry.isNotEmpty) {
               provider.setCurrentWord(entry);
               _controller.clear();
-              _focusNode.requestFocus();
+              provider.resetFocus();
             } else {
               showDialog(
                 context: context,
@@ -63,7 +63,7 @@ class _NextWordTextFieldState extends State<NextWordTextField> {
                     ],
                   );
                 },
-              );
+              ).whenComplete(() => provider.resetFocus());
             }
           },
         ),

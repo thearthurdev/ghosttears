@@ -20,8 +20,21 @@ class GhostTearsCard extends StatelessWidget {
       int? playerID = player!.playerID;
       String? playerName = player!.playerName;
       int? playerScore = player!.playerScore ??= 10;
-      bool? isGameOver = player!.isGameOver;
+      bool? isPlayerGameOver = player!.isPlayerGameOver;
       bool? isCurrentPlayer = playerID == provider.currentPlayer;
+
+      List<String> ghosttears = [
+        playerScore >= 1 ? 'G' : '',
+        playerScore >= 2 ? 'H' : '',
+        playerScore >= 3 ? 'O' : '',
+        playerScore >= 4 ? 'S' : '',
+        playerScore >= 5 ? 'T' : '',
+        playerScore >= 6 ? 'T' : '',
+        playerScore >= 7 ? 'E' : '',
+        playerScore >= 8 ? 'A' : '',
+        playerScore >= 9 ? 'R' : '',
+        playerScore >= 10 ? 'S' : '',
+      ];
 
       return Container(
         margin: EdgeInsets.symmetric(vertical: windowWidth * 0.002),
@@ -29,82 +42,77 @@ class GhostTearsCard extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             playerName != null
-                ? Container(
-                    decoration: BoxDecoration(
-                      color: isGameOver == true
-                          ? Colors.black.withOpacity(0.4)
-                          : Colors.white,
-                      border: Border.all(
-                        color: isCurrentPlayer
-                            ? SystemTheme.accentInstance.accent.toAccentColor()
-                            : const Color(0xFFE5E5E5),
-                        width: isCurrentPlayer ? 4.0 : 1.0,
-                      ),
-                      shape: BoxShape.circle,
-                    ),
-                    child: CircleAvatar(
-                      backgroundColor: Colors.white.withOpacity(0.8),
-                      radius: 24.0,
-                      child: Text(
-                        playerName.length > 1
-                            ? playerName.substring(0, 2)
-                            : playerName,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: isGameOver == true
-                              ? Colors.black.withOpacity(0.3)
-                              : Colors.black,
-                        ),
-                      ),
-                    ),
-                  )
+                ? PlayerIcon(player!)
                 : const SizedBox(width: 48.0),
             SizedBox(width: isCurrentPlayer ? 10.0 : 16.0),
             Row(
-              children: [
-                GhostLetter(
-                  playerScore >= 1 ? 'G' : '',
-                  isGameOver: player!.isGameOver,
+              children: List.generate(
+                ghosttears.length,
+                (index) => GhostLetter(
+                  ghosttears[index],
+                  isPlayerGameOver: isPlayerGameOver,
                 ),
-                GhostLetter(
-                  playerScore >= 2 ? 'H' : '',
-                  isGameOver: player!.isGameOver,
-                ),
-                GhostLetter(
-                  playerScore >= 3 ? 'O' : '',
-                  isGameOver: player!.isGameOver,
-                ),
-                GhostLetter(
-                  playerScore >= 4 ? 'S' : '',
-                  isGameOver: player!.isGameOver,
-                ),
-                GhostLetter(
-                  playerScore >= 5 ? 'T' : '',
-                  isGameOver: player!.isGameOver,
-                ),
-                GhostLetter(
-                  playerScore >= 6 ? 'T' : '',
-                  isGameOver: player!.isGameOver,
-                ),
-                GhostLetter(
-                  playerScore >= 7 ? 'E' : '',
-                  isGameOver: player!.isGameOver,
-                ),
-                GhostLetter(
-                  playerScore >= 8 ? 'A' : '',
-                  isGameOver: player!.isGameOver,
-                ),
-                GhostLetter(
-                  playerScore >= 9 ? 'R' : '',
-                  isGameOver: player!.isGameOver,
-                ),
-                GhostLetter(
-                  playerScore >= 10 ? 'S' : '',
-                  isGameOver: player!.isGameOver,
-                ),
-              ],
+              ),
             ),
           ],
+        ),
+      );
+    });
+  }
+}
+
+class PlayerIcon extends StatelessWidget {
+  const PlayerIcon(this.player, {Key? key}) : super(key: key);
+
+  final Player player;
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<GameProvider>(builder: (context, provider, child) {
+      int? playerID = player.playerID;
+      String? playerName = player.playerName;
+      bool? isPlayerGameOver = player.isPlayerGameOver;
+      bool? isCurrentPlayer = playerID == provider.currentPlayer;
+
+      return Container(
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: isPlayerGameOver == true
+              ? Colors.black.withOpacity(0.4)
+              : Colors.white,
+          border: Border.all(
+            color: isCurrentPlayer
+                ? SystemTheme.accentInstance.accent.toAccentColor()
+                : const Color(0xFFE5E5E5),
+            width: isCurrentPlayer ? 4.0 : 1.0,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.1),
+              offset: const Offset(0.0, 0.8),
+            ),
+          ],
+        ),
+        child: Button(
+          style: ButtonStyle(
+            shape: ButtonState.all(const CircleBorder()),
+            elevation: ButtonState.all(0.0),
+            padding: ButtonState.all(EdgeInsets.zero),
+          ),
+          child: CircleAvatar(
+            backgroundColor: Colors.transparent,
+            radius: 24.0,
+            child: Text(
+              playerName!.length > 1 ? playerName.substring(0, 2) : playerName,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: isPlayerGameOver == true
+                    ? Colors.black.withOpacity(0.3)
+                    : Colors.black,
+              ),
+            ),
+          ),
+          onPressed: () {},
         ),
       );
     });
@@ -115,13 +123,13 @@ class GhostLetter extends StatelessWidget {
   const GhostLetter(
     this.letter, {
     this.isUserCard,
-    this.isGameOver,
+    this.isPlayerGameOver,
     Key? key,
   }) : super(key: key);
 
   final String letter;
   final bool? isUserCard;
-  final bool? isGameOver;
+  final bool? isPlayerGameOver;
 
   @override
   Widget build(BuildContext context) {
@@ -151,8 +159,9 @@ class GhostLetter extends StatelessWidget {
           style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 48.0,
-              color:
-                  isGameOver! ? Colors.black.withOpacity(0.2) : Colors.black),
+              color: isPlayerGameOver!
+                  ? Colors.black.withOpacity(0.2)
+                  : Colors.black),
         ),
       ),
     );

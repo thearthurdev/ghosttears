@@ -15,10 +15,6 @@ class GameActions extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const GameActionButton(
-                icon: FluentIcons.undo,
-                tooltip: 'Undo previous action',
-              ),
               GameActionButton(
                 icon: FluentIcons.cancel,
                 tooltip: 'Mark word as wrong',
@@ -29,20 +25,29 @@ class GameActions extends StatelessWidget {
                 tooltip: 'Mark word as complete',
                 onPressed: () => provider.markCompleteWord(),
               ),
+              GameActionButton(
+                icon: FluentIcons.blocked,
+                tooltip: 'Forfeit turn',
+                onPressed: () => provider.forfeitTurn(),
+              ),
               const GamePlayStateTimerButton(),
               const GameActionButton(
-                icon: FluentIcons.forward,
-                tooltip: 'Stop the game',
+                icon: FluentIcons.undo,
+                tooltip: 'Undo previous action',
+              ),
+              const GameActionButton(
+                icon: FluentIcons.redo,
+                tooltip: 'Redo previous action',
               ),
               GameActionButton(
                 icon: FluentIcons.reset,
-                tooltip: 'Reset the game',
+                tooltip: 'Reset game',
                 onPressed: () => provider.resetGame(),
               ),
-              const GameActionButton(
-                icon: FluentIcons.more_vertical,
-                tooltip: 'More actions',
-              ),
+              // const GameActionButton(
+              //   icon: FluentIcons.more_vertical,
+              //   tooltip: 'More actions',
+              // ),
             ],
           ),
         ),
@@ -83,27 +88,47 @@ class GameActionButton extends StatelessWidget {
   }
 }
 
-class GamePlayStateTimerButton extends StatelessWidget {
+class GamePlayStateTimerButton extends StatefulWidget {
   const GamePlayStateTimerButton({
     Key? key,
   }) : super(key: key);
 
   @override
+  State<GamePlayStateTimerButton> createState() =>
+      _GamePlayStateTimerButtonState();
+}
+
+class _GamePlayStateTimerButtonState extends State<GamePlayStateTimerButton> {
+  late GameProvider _gameProvider;
+
+  @override
+  void initState() {
+    _gameProvider = GameProvider();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _gameProvider.cancelTimer();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Consumer<GameProvider>(builder: (context, provider, child) {
       return Tooltip(
-        message: provider.isGamePaused == true
-            ? 'Unpause the timer'
-            : 'Pause the timer',
+        message:
+            provider.isGamePaused == true ? 'Unpause timer' : 'Pause timer',
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 6.0),
           child: Stack(
             children: [
-              const Positioned(
+              Positioned(
                 top: 2.0,
                 left: 2.0,
                 child: ProgressRing(
                   backwards: true,
+                  value: provider.countdownPercentage,
                   // value: 25.0,
                 ),
               ),
@@ -117,7 +142,7 @@ class GamePlayStateTimerButton extends StatelessWidget {
                   size: 24.0,
                 ),
                 onPressed: () {
-                  provider.setGamePaused();
+                  provider.setGamePausedState();
                 },
               ),
             ],
