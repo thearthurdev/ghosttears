@@ -1,7 +1,7 @@
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:ghosttears/widgets/windows_buttons.dart';
+import 'package:ghosttears/widgets/desktop/windows_buttons.dart';
 
 class BaseScreen extends StatelessWidget {
   const BaseScreen({

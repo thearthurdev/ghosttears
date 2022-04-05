@@ -1,26 +1,19 @@
-// import 'dart:math';
 import 'dart:async';
 
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:ghosttears/models/player.dart';
 
-// List<String> testPlayers = [
-//   'Delords',
-//   'Valentine',
-//   'Simon',
-//   'Samuel',
-//   'Audrey',
-//   'Diabene',
-//   'David',
-//   'Oppong',
-//   'Yaro',
-//   'Joseph',
-//   'Robert',
-//   'Chris',
-// ];
+typedef GameEvent = Function();
 
 class GameProvider extends ChangeNotifier {
-  final FocusNode _focusNode = FocusNode();
+  final FocusNode _nextLetterTextFieldFocusNode = FocusNode();
+  final TextEditingController _nextLetterTextFieldController =
+      TextEditingController();
+
+  FocusNode get nextLetterTextFieldFocusNode => _nextLetterTextFieldFocusNode;
+  TextEditingController get nextLetterTextFieldController =>
+      _nextLetterTextFieldController;
+
   int? _playerCount;
   int? _currentPlayer;
   int? _selectedPlayer;
@@ -32,10 +25,11 @@ class GameProvider extends ChangeNotifier {
   bool? _isGamePaused;
   bool? _isGameOver;
   Timer? _timer;
-  int _totalTime = 10;
+  int _totalTime = 15;
+  int? _countdownTime;
   double _countdownPercentage = 100;
+  List<String>? _gameHistory;
 
-  FocusNode get focusNode => _focusNode;
   int? get playerCount => _playerCount;
   int? get currentPlayer => _currentPlayer;
   int? get selectedPlayer => _selectedPlayer;
@@ -47,13 +41,27 @@ class GameProvider extends ChangeNotifier {
   bool? get isGameOver => _isGameOver;
   int? get totalTime => _totalTime;
   double get countdownPercentage => _countdownPercentage;
+  List<String>? get gameHistory => _gameHistory;
+
+  Map<String, GameEvent> _redoUndoMap() {
+    return {
+      'markCompleteWord': undoMarkCompleteWord,
+      'markWrongWord': undoMarkWrongWord,
+      'forfeitTurn': undoForfeitTurn,
+    };
+  }
 
   void resetFocus() {
-    _focusNode.requestFocus();
+    WidgetsBinding.instance?.addPostFrameCallback(
+        (timeStamp) => _nextLetterTextFieldFocusNode.requestFocus());
+  }
+
+  void resetTextField() {
+    WidgetsBinding.instance?.addPostFrameCallback(
+        (timeStamp) => _nextLetterTextFieldController.clear());
   }
 
   void startNewGame() {
-    // _generateTestPlayers();
     resetGame();
     setCurrentPlayer(index: 0);
     setGamePausedState(state: true);
@@ -66,7 +74,7 @@ class GameProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setCountdownTime(int time) {
+  void setTotalTime(int time) {
     _totalTime = time;
 
     notifyListeners();
@@ -75,17 +83,15 @@ class GameProvider extends ChangeNotifier {
   void startTimer() {
     const tick = Duration(seconds: 1);
 
-    int? countdownTime;
-
-    countdownTime ??= _totalTime;
+    _countdownTime ??= _totalTime;
 
     if (isGamePaused == false) {
       _timer = Timer.periodic(tick, (timer) {
-        if (countdownTime == 0) {
+        if (_countdownTime == 0) {
           forfeitTurn();
         } else {
-          countdownTime = countdownTime! - 1;
-          _countdownPercentage = (countdownTime! / _totalTime) * 100;
+          _countdownTime = _countdownTime! - 1;
+          _countdownPercentage = (_countdownTime! / _totalTime) * 100;
 
           notifyListeners();
         }
@@ -96,6 +102,7 @@ class GameProvider extends ChangeNotifier {
   void cancelTimer() {
     if (_timer != null) {
       _timer!.cancel();
+      _countdownTime = null;
     }
   }
 
@@ -106,21 +113,11 @@ class GameProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // void _generateTestPlayers() {
-  //   _players = List.generate(
-  //     _playerCount!,
-  //     (index) => Player(
-  //       playerID: index,
-  //       playerName: testPlayers.elementAt(Random().nextInt(testPlayers.length)),
-  //     ),
-  //   );
-  // }
-
   void _generatePlayers() {
     _players = List.generate(
       _playerCount!,
       (index) => Player(
-        playerID: index,
+        playerIndex: index,
         playerName: 'P${index + 1}',
       ),
     );
@@ -139,6 +136,7 @@ class GameProvider extends ChangeNotifier {
   void resetGame() {
     _resetCurrentWord();
     _resetUsedWords();
+    _resetGameHistory();
     _resetPenalizedPlayer();
     _resetPlayers();
     _resetGameOverCount();
@@ -146,14 +144,14 @@ class GameProvider extends ChangeNotifier {
     setGamePausedState(state: true);
     setCurrentPlayer(index: 0);
     resetFocus();
+    resetTextField();
   }
 
   void _resetPlayers() {
     for (Player player in _players!) {
       player.playerScore = 0;
+      player.isPlayerGameOver = false;
     }
-    // _players = [];
-    // _generateTestPlayers();
   }
 
   void _resetPenalizedPlayer() {
@@ -174,19 +172,33 @@ class GameProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setCurrentWord(String? newLetter) {
-    _setPenalizedPlayer();
+  void setCurrentWord({String? newLetter}) {
+    if (newLetter != null) {
+      _setPenalizedPlayer();
 
-    if (_currentWord != null) {
-      _currentWord = _currentWord! + newLetter!;
-    } else {
-      _currentWord = newLetter;
+      if (_currentWord != null) {
+        _currentWord = _currentWord! + newLetter;
+      } else {
+        _currentWord = newLetter;
+      }
+
+      resetTimer();
+      setGamePausedState(state: false);
+
+      setCurrentPlayer();
     }
 
-    resetTimer();
-    setGamePausedState(state: false);
+    notifyListeners();
+  }
 
-    setCurrentPlayer();
+  void undoSetCurrentWord() {
+    if (_currentWord != null) {
+      if (_currentWord!.length > 1) {
+        _currentWord = _currentWord!.substring(0, _currentWord!.length - 1);
+      } else {
+        _currentWord = null;
+      }
+    }
 
     notifyListeners();
   }
@@ -197,19 +209,47 @@ class GameProvider extends ChangeNotifier {
         _currentPlayer = index;
       }
     } else {
-      int nextPlayer =
+      int previousPlayer =
           _currentPlayer! == _playerCount! - 1 ? 0 : _currentPlayer! + 1;
 
-      if (_players![nextPlayer].isPlayerGameOver == true) {
-        _currentPlayer = nextPlayer;
+      if (_players![previousPlayer].isPlayerGameOver == true) {
+        _currentPlayer = previousPlayer;
         setCurrentPlayer();
       } else {
         if (_currentPlayer == null) {
           _currentPlayer = 0;
         } else {
-          _currentPlayer = nextPlayer;
+          _currentPlayer = previousPlayer;
         }
       }
+    }
+
+    notifyListeners();
+  }
+
+  void undoSetCurrentPlayer() {
+    int previousPlayer =
+        _currentPlayer! == 0 ? _playerCount! - 1 : _currentPlayer! - 1;
+
+    if (_players![previousPlayer].isPlayerGameOver == true) {
+      _currentPlayer = previousPlayer;
+      undoSetCurrentPlayer();
+    } else {
+      if (_currentPlayer == null) {
+        _currentPlayer = 0;
+      } else {
+        _currentPlayer = previousPlayer;
+      }
+    }
+
+    notifyListeners();
+  }
+
+  void toggleSelectedPlayer(int player) {
+    if (_selectedPlayer == null) {
+      _selectedPlayer = player;
+    } else {
+      _selectedPlayer = null;
     }
 
     notifyListeners();
@@ -237,6 +277,13 @@ class GameProvider extends ChangeNotifier {
     resetFocus();
     setGamePausedState(state: true);
     resetTimer();
+
+    _addToGameHistory('markCompleteWord');
+  }
+
+  void undoMarkCompleteWord() {
+    _undoAddToPlayerScore();
+    _undoAddToUsedWords();
   }
 
   void markWrongWord() {
@@ -247,6 +294,13 @@ class GameProvider extends ChangeNotifier {
     resetFocus();
     setGamePausedState(state: true);
     resetTimer();
+
+    _addToGameHistory('markWrongWord');
+  }
+
+  void undoMarkWrongWord() {
+    _undoAddToPlayerScore();
+    _undoAddToUsedWords();
   }
 
   void forfeitTurn() {
@@ -256,6 +310,13 @@ class GameProvider extends ChangeNotifier {
     resetFocus();
     setGamePausedState(state: true);
     resetTimer();
+
+    _addToGameHistory('forfeitTurn');
+  }
+
+  void undoForfeitTurn() {
+    _undoAddToPlayerScore();
+    _undoAddToUsedWords();
   }
 
   void _setPenalizedPlayer() {
@@ -283,6 +344,26 @@ class GameProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void _undoAddToPlayerScore({int? player}) {
+    int penalizedPlayer = player ?? _currentPlayer!;
+
+    int oldScore = _players!.elementAt(penalizedPlayer).playerScore!;
+    int newScore = oldScore > 0 ? oldScore - 1 : oldScore;
+
+    if (oldScore == 10) {
+      _players!.elementAt(penalizedPlayer).isPlayerGameOver = false;
+
+      notifyListeners();
+
+      undoSetCurrentPlayer();
+      _setPenalizedPlayer();
+    }
+
+    _players!.elementAt(penalizedPlayer).playerScore = newScore;
+
+    notifyListeners();
+  }
+
   void _checkGameOver() {
     _gameOverCount ??= 0;
     _gameOverCount! + 1;
@@ -304,10 +385,43 @@ class GameProvider extends ChangeNotifier {
 
     notifyListeners();
   }
+
+  void _undoAddToUsedWords() {
+    if (_usedWords != null && _usedWords!.isNotEmpty) {
+      String lastUsedWord = _usedWords!.last;
+      _currentWord = lastUsedWord.substring(0, lastUsedWord.length - 1);
+
+      _nextLetterTextFieldController.text =
+          lastUsedWord.substring(lastUsedWord.length - 1, lastUsedWord.length);
+
+      _usedWords!.removeLast();
+
+      notifyListeners();
+    }
+  }
+
+  void _addToGameHistory(String? event) {
+    _gameHistory ??= [];
+    _gameHistory!.add(event!);
+  }
+
+  void _resetGameHistory() {
+    _gameHistory = null;
+
+    notifyListeners();
+  }
+
+  void undo() {
+    String lastAction = _gameHistory!.last;
+    _redoUndoMap()[lastAction]!.call();
+    _gameHistory!.removeLast();
+    resetFocus();
+  }
 }
 
 
 // TODO: Ability to click on a player name and perform an action on that specific player 
-// TODO: Pause game on new start
-// TODO: Animate countdownTimer using Animation and Tween
+// TODO: Animate _countdownTimer using Animation and Tween
 // TODO: Implement navigation in browser
+// TODO: Disable some buttons for other players in online multiplayer
+// TODO: DOUBLE SPACE FOR PAUSE

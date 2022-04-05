@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 
 extension MyNavigator on BuildContext {
-  navigate(Widget route, {isDialog = false}) => Navigator.push(
+  Future navigate(Widget route, {isDialog = false}) => Navigator.push(
         this,
         MaterialPageRoute(
             fullscreenDialog: isDialog, builder: (context) => route),
       );
 
-  navigateReplace(Widget route, {isDialog = false}) =>
+  Future navigateReplace(Widget route, {isDialog = false}) =>
       Navigator.pushReplacement(
         this,
         MaterialPageRoute(
             fullscreenDialog: isDialog, builder: (context) => route),
       );
 
-  navigateReplaceAll(Widget route) => Navigator.pushAndRemoveUntil(
+  Future navigateReplaceAll(Widget route) => Navigator.pushAndRemoveUntil(
         this,
         MaterialPageRoute(builder: (context) => route),
         (route) => false,

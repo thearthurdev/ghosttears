@@ -1,9 +1,10 @@
 import 'package:fluent_ui/fluent_ui.dart';
-import 'package:ghosttears/screens/base_screen.dart';
+import 'package:ghosttears/screens/desktop/base_screen.dart';
+import 'package:ghosttears/widgets/desktop/bottom_bar.dart';
+import 'package:ghosttears/widgets/desktop/game_board.dart';
+import 'package:ghosttears/widgets/desktop/side_bar.dart';
 
-import '../widgets/bottom_bar.dart';
-import '../widgets/side_bar.dart';
-import '../widgets/game_board.dart';
+
 
 class GameScreen extends StatelessWidget {
   const GameScreen({Key? key}) : super(key: key);

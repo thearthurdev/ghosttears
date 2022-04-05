@@ -1,6 +1,8 @@
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:ghosttears/providers/game_provider.dart';
 import 'package:ghosttears/utils/navigator.dart';
+import 'package:provider/provider.dart';
 
 class WindowButtons extends StatelessWidget {
   const WindowButtons({this.showBackButton = true, Key? key}) : super(key: key);
@@ -84,5 +86,9 @@ class GoBackButton extends WindowButton {
                   FluentIcons.back,
                   size: 12.0,
                 ),
-            onPressed: onPressed ?? () => context.popView(context));
+            onPressed: onPressed ??
+                () {
+                  context.read<GameProvider>().resetGame();
+                  context.popView(context);
+                });
 }

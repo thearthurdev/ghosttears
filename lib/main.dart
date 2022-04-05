@@ -1,8 +1,8 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/foundation.dart';
 import 'package:ghosttears/providers/game_provider.dart';
-import 'package:ghosttears/screens/game_screen.dart';
-import 'package:ghosttears/screens/home_screen.dart';
+import 'package:ghosttears/screens/desktop/game_screen.dart';
+import 'package:ghosttears/screens/desktop/home_screen.dart';
 import 'package:system_theme/system_theme.dart';
 import 'package:url_strategy/url_strategy.dart';
 import 'package:flutter_acrylic/flutter_acrylic.dart' as flutter_acrylic;

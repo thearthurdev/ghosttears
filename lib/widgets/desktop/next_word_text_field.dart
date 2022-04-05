@@ -12,12 +12,13 @@ class NextWordTextField extends StatefulWidget {
 
 class _NextWordTextFieldState extends State<NextWordTextField> {
   late TextEditingController _controller;
-  late FocusNode _focusNode;
+  late FocusNode _nextLetterTextFieldFocusNode;
 
   @override
   void initState() {
-    _controller = TextEditingController();
-    _focusNode = context.read<GameProvider>().focusNode;
+    _controller = context.read<GameProvider>().nextLetterTextFieldController;
+    _nextLetterTextFieldFocusNode =
+        context.read<GameProvider>().nextLetterTextFieldFocusNode;
 
     super.initState();
   }
@@ -29,7 +30,7 @@ class _NextWordTextFieldState extends State<NextWordTextField> {
         padding: const EdgeInsets.symmetric(horizontal: 24.0),
         child: TextBox(
           controller: _controller,
-          focusNode: _focusNode,
+          focusNode: _nextLetterTextFieldFocusNode,
           autocorrect: false,
           autofocus: true,
           maxLength: 1,
@@ -42,7 +43,7 @@ class _NextWordTextFieldState extends State<NextWordTextField> {
           ),
           onSubmitted: (entry) {
             if (entry.isNotEmpty) {
-              provider.setCurrentWord(entry);
+              provider.setCurrentWord(newLetter: entry);
               _controller.clear();
               provider.resetFocus();
             } else {

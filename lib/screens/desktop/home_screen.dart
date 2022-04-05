@@ -1,8 +1,8 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:ghosttears/providers/game_provider.dart';
-import 'package:ghosttears/screens/base_screen.dart';
-import 'package:ghosttears/screens/game_screen.dart';
+import 'package:ghosttears/screens/desktop/base_screen.dart';
+import 'package:ghosttears/screens/desktop/game_screen.dart';
 import 'package:ghosttears/utils/navigator.dart';
 import 'package:provider/provider.dart';
 
@@ -70,8 +70,9 @@ class HomeScreen extends StatelessWidget {
                 child: const Text('Play'),
                 onPressed: () {
                   if (provider.playerCount != null) {
-                    provider.startNewGame();
-                    context.navigate(const GameScreen());
+                    context
+                        .navigate(const GameScreen())
+                        .whenComplete(() => provider.startNewGame());
                   } else {
                     showDialog(
                       context: context,

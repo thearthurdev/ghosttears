@@ -1,6 +1,6 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:ghosttears/providers/game_provider.dart';
-import 'package:ghosttears/widgets/word_chip.dart';
+import 'package:ghosttears/widgets/desktop/word_chip.dart';
 import 'package:provider/provider.dart';
 import 'package:system_theme/system_theme.dart';
 

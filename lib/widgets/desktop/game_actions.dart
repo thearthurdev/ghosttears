@@ -31,23 +31,27 @@ class GameActions extends StatelessWidget {
                 onPressed: () => provider.forfeitTurn(),
               ),
               const GamePlayStateTimerButton(),
-              const GameActionButton(
+              GameActionButton(
                 icon: FluentIcons.undo,
                 tooltip: 'Undo previous action',
+                onPressed: provider.gameHistory != null &&
+                        provider.gameHistory!.isNotEmpty
+                    ? () => provider.undo()
+                    : null,
               ),
-              const GameActionButton(
-                icon: FluentIcons.redo,
-                tooltip: 'Redo previous action',
-              ),
+              // const GameActionButton(
+              //   icon: FluentIcons.redo,
+              //   tooltip: 'Redo previous action',
+              // ),
               GameActionButton(
                 icon: FluentIcons.reset,
                 tooltip: 'Reset game',
                 onPressed: () => provider.resetGame(),
               ),
-              // const GameActionButton(
-              //   icon: FluentIcons.more_vertical,
-              //   tooltip: 'More actions',
-              // ),
+              const GameActionButton(
+                icon: FluentIcons.more_vertical,
+                tooltip: 'More actions',
+              ),
             ],
           ),
         ),
@@ -141,9 +145,7 @@ class _GamePlayStateTimerButtonState extends State<GamePlayStateTimerButton> {
                       : FluentIcons.pause,
                   size: 24.0,
                 ),
-                onPressed: () {
-                  provider.setGamePausedState();
-                },
+                onPressed: () => provider.setGamePausedState(),
               ),
             ],
           ),

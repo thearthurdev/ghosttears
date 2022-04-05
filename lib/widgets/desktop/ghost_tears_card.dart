@@ -17,11 +17,11 @@ class GhostTearsCard extends StatelessWidget {
     double windowWidth = MediaQuery.of(context).size.width;
 
     return Consumer<GameProvider>(builder: (context, provider, child) {
-      int? playerID = player!.playerID;
+      int? playerIndex = player!.playerIndex;
       String? playerName = player!.playerName;
       int? playerScore = player!.playerScore ??= 10;
       bool? isPlayerGameOver = player!.isPlayerGameOver;
-      bool? isCurrentPlayer = playerID == provider.currentPlayer;
+      bool? isCurrentPlayer = playerIndex == provider.currentPlayer;
 
       List<String> ghosttears = [
         playerScore >= 1 ? 'G' : '',
@@ -69,22 +69,31 @@ class PlayerIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<GameProvider>(builder: (context, provider, child) {
-      int? playerID = player.playerID;
-      String? playerName = player.playerName;
-      bool? isPlayerGameOver = player.isPlayerGameOver;
-      bool? isCurrentPlayer = playerID == provider.currentPlayer;
+      int? _playerIndex = player.playerIndex;
+      String? _playerName = player.playerName;
+      bool? _isPlayerGameOver = player.isPlayerGameOver;
+      bool? _isCurrentPlayer = _playerIndex == provider.currentPlayer;
+      bool? _isSelectedPlayer = _playerIndex == provider.selectedPlayer;
+
+      Color _backgroundColor() {
+        if (_isPlayerGameOver == true) {
+          return Colors.black.withOpacity(0.4);
+        }
+        if (_isSelectedPlayer == true) {
+          return SystemTheme.accentInstance.accent.toAccentColor();
+        }
+        return Colors.white;
+      }
 
       return Container(
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: isPlayerGameOver == true
-              ? Colors.black.withOpacity(0.4)
-              : Colors.white,
+          color: _backgroundColor(),
           border: Border.all(
-            color: isCurrentPlayer
+            color: _isCurrentPlayer
                 ? SystemTheme.accentInstance.accent.toAccentColor()
                 : const Color(0xFFE5E5E5),
-            width: isCurrentPlayer ? 4.0 : 1.0,
+            width: _isCurrentPlayer ? 4.0 : 1.0,
           ),
           boxShadow: [
             BoxShadow(
@@ -103,16 +112,18 @@ class PlayerIcon extends StatelessWidget {
             backgroundColor: Colors.transparent,
             radius: 24.0,
             child: Text(
-              playerName!.length > 1 ? playerName.substring(0, 2) : playerName,
+              _playerName!.length > 1
+                  ? _playerName.substring(0, 2)
+                  : _playerName,
               style: TextStyle(
                 fontWeight: FontWeight.bold,
-                color: isPlayerGameOver == true
+                color: _isPlayerGameOver == true
                     ? Colors.black.withOpacity(0.3)
                     : Colors.black,
               ),
             ),
           ),
-          onPressed: () {},
+          onPressed: () => provider.toggleSelectedPlayer(player.playerIndex!),
         ),
       );
     });

@@ -1,7 +1,7 @@
 import 'package:fluent_ui/fluent_ui.dart';
-import 'package:ghosttears/widgets/current_word.dart';
-import 'package:ghosttears/widgets/game_actions.dart';
-import 'package:ghosttears/widgets/next_word_text_field.dart';
+import 'package:ghosttears/widgets/desktop/current_word.dart';
+import 'package:ghosttears/widgets/desktop/game_actions.dart';
+import 'package:ghosttears/widgets/desktop/next_word_text_field.dart';
 
 class BottomBar extends StatelessWidget {
   const BottomBar({Key? key}) : super(key: key);

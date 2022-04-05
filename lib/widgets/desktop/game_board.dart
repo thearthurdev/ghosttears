@@ -1,7 +1,7 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:ghosttears/models/player.dart';
 import 'package:ghosttears/providers/game_provider.dart';
-import 'package:ghosttears/widgets/ghost_tears_card.dart';
+import 'package:ghosttears/widgets/desktop/ghost_tears_card.dart';
 import 'package:provider/provider.dart';
 
 class GameBoard extends StatelessWidget {
