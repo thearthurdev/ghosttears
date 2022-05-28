@@ -36,7 +36,7 @@ class _NextWordTextFieldState extends State<NextWordTextField> {
           maxLength: 1,
           header: 'Next Letter',
           cursorWidth: 2.0,
-          cursorColor: SystemTheme.accentInstance.accent.toAccentColor(),
+          cursorColor: SystemTheme.accentColor.accent.toAccentColor(),
           style: const TextStyle(
             fontSize: 28.0,
             fontWeight: FontWeight.bold,

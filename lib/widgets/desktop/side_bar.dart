@@ -29,8 +29,7 @@ class SideBar extends StatelessWidget {
                         radius: 30.0,
                         child: Icon(
                           FluentIcons.drop_shape,
-                          color:
-                              SystemTheme.accentInstance.accent.toAccentColor(),
+                          color: SystemTheme.accentColor.accent.toAccentColor(),
                         ),
                       ),
                       title: const Text(

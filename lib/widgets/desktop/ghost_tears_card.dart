@@ -80,7 +80,7 @@ class PlayerIcon extends StatelessWidget {
           return Colors.black.withOpacity(0.4);
         }
         if (_isSelectedPlayer == true) {
-          return SystemTheme.accentInstance.accent.toAccentColor();
+          return SystemTheme.accentColor.accent.toAccentColor();
         }
         return Colors.white;
       }
@@ -91,7 +91,7 @@ class PlayerIcon extends StatelessWidget {
           color: _backgroundColor(),
           border: Border.all(
             color: _isCurrentPlayer
-                ? SystemTheme.accentInstance.accent.toAccentColor()
+                ? SystemTheme.accentColor.accent.toAccentColor()
                 : const Color(0xFFE5E5E5),
             width: _isCurrentPlayer ? 4.0 : 1.0,
           ),
