@@ -5,6 +5,7 @@ import 'package:ghosttears/screens/desktop/base_screen.dart';
 import 'package:ghosttears/screens/desktop/game_screen.dart';
 import 'package:ghosttears/utils/navigator.dart';
 import 'package:provider/provider.dart';
+import 'package:system_theme/system_theme.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -70,9 +71,8 @@ class HomeScreen extends StatelessWidget {
                 child: const Text('Play'),
                 onPressed: () {
                   if (provider.playerCount != null) {
-                    context
-                        .navigate(const GameScreen())
-                        .whenComplete(() => provider.startNewGame());
+                    context.navigate(const GameScreen());
+                    provider.startNewGame();
                   } else {
                     showDialog(
                       context: context,
@@ -118,16 +118,16 @@ class PlayerSetup extends StatelessWidget {
       return Container(
         width: 120.0,
         margin: const EdgeInsets.all(8.0),
-        // color: Colors.white,
         child: Column(
           children: [
             Container(
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.white,
                 border: Border.all(
-                  color: const Color(0xFFE5E5E5),
-                  width: 1.0,
+                  color: SystemTheme.isDarkMode
+                      ? const Color(0xFF5B5B5B)
+                      : const Color(0xFFE5E5E5),
+                  width: 1.5,
                 ),
                 boxShadow: [
                   BoxShadow(
@@ -139,7 +139,9 @@ class PlayerSetup extends StatelessWidget {
               child: CircleAvatar(
                 minRadius: 24.0,
                 maxRadius: 32.0,
-                backgroundColor: Colors.white,
+                backgroundColor: SystemTheme.isDarkMode
+                    ? const Color(0xFF323232)
+                    : Colors.white,
                 child: Text(
                   provider.players![index].playerName!.substring(
                       0,
@@ -148,9 +150,13 @@ class PlayerSetup extends StatelessWidget {
                           : provider.players![index].playerName!.length),
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    color: provider.players![index].isPlayerGameOver == true
-                        ? Colors.black.withOpacity(0.3)
-                        : Colors.black,
+                    color: SystemTheme.isDarkMode
+                        ? provider.players![index].isPlayerGameOver == true
+                            ? Colors.white.withOpacity(0.3)
+                            : Colors.white
+                        : provider.players![index].isPlayerGameOver == true
+                            ? Colors.black.withOpacity(0.3)
+                            : Colors.black,
                   ),
                 ),
               ),

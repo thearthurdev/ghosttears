@@ -1,6 +1,7 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:ghosttears/providers/game_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:system_theme/system_theme.dart';
 
 class CurrentWord extends StatelessWidget {
   const CurrentWord({Key? key}) : super(key: key);
@@ -30,7 +31,9 @@ class CurrentWord extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 40.0,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black.withOpacity(0.2),
+                          color: SystemTheme.isDarkMode
+                              ? Colors.white.withOpacity(0.2)
+                              : Colors.black.withOpacity(0.2),
                         ),
                       )
                     : FittedBox(

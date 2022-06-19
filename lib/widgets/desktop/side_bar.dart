@@ -24,12 +24,32 @@ class SideBar extends StatelessWidget {
                     const SizedBox(height: 16.0),
                     ListTile(
                       contentPadding: EdgeInsets.zero,
-                      leading: CircleAvatar(
-                        backgroundColor: Colors.white,
-                        radius: 30.0,
-                        child: Icon(
-                          FluentIcons.drop_shape,
-                          color: SystemTheme.accentColor.accent.toAccentColor(),
+                      leading: Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: SystemTheme.isDarkMode
+                                ? const Color(0xFF5B5B5B)
+                                : const Color(0xFFE5E5E5),
+                            width: 1.5,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.1),
+                              offset: const Offset(0.0, 0.8),
+                            ),
+                          ],
+                        ),
+                        child: CircleAvatar(
+                          backgroundColor: SystemTheme.isDarkMode
+                              ? const Color(0xFF323232)
+                              : Colors.white,
+                          radius: 30.0,
+                          child: Icon(
+                            FluentIcons.drop_shape,
+                            color:
+                                SystemTheme.accentColor.accent.toAccentColor(),
+                          ),
                         ),
                       ),
                       title: const Text(

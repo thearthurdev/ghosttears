@@ -52,12 +52,12 @@ class GameProvider extends ChangeNotifier {
   }
 
   void resetFocus() {
-    WidgetsBinding.instance?.addPostFrameCallback(
+    WidgetsBinding.instance.addPostFrameCallback(
         (timeStamp) => _nextLetterTextFieldFocusNode.requestFocus());
   }
 
   void resetTextField() {
-    WidgetsBinding.instance?.addPostFrameCallback(
+    WidgetsBinding.instance.addPostFrameCallback(
         (timeStamp) => _nextLetterTextFieldController.clear());
   }
 
@@ -148,9 +148,11 @@ class GameProvider extends ChangeNotifier {
   }
 
   void _resetPlayers() {
-    for (Player player in _players!) {
-      player.playerScore = 0;
-      player.isPlayerGameOver = false;
+    if (_players != null) {
+      for (Player player in _players!) {
+        player.playerScore = 0;
+        player.isPlayerGameOver = false;
+      }
     }
   }
 

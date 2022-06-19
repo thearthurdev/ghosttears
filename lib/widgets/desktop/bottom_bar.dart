@@ -2,6 +2,7 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'package:ghosttears/widgets/desktop/current_word.dart';
 import 'package:ghosttears/widgets/desktop/game_actions.dart';
 import 'package:ghosttears/widgets/desktop/next_word_text_field.dart';
+import 'package:system_theme/system_theme.dart';
 
 class BottomBar extends StatelessWidget {
   const BottomBar({Key? key}) : super(key: key);
@@ -11,8 +12,15 @@ class BottomBar extends StatelessWidget {
     return Container(
       height: 100.0,
       decoration: BoxDecoration(
-        border: Border.all(color: const Color(0xFFE5E5E5), width: 1.0),
-        color: Colors.white,
+        border: Border(
+          top: BorderSide(
+            color: SystemTheme.isDarkMode
+                ? const Color(0xFF5B5B5B)
+                : const Color(0xFFE5E5E5),
+            width: 1.0,
+          ),
+        ),
+        color: SystemTheme.isDarkMode ? const Color(0xFF323232) : Colors.white,
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.08),

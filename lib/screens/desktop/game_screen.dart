@@ -4,8 +4,6 @@ import 'package:ghosttears/widgets/desktop/bottom_bar.dart';
 import 'package:ghosttears/widgets/desktop/game_board.dart';
 import 'package:ghosttears/widgets/desktop/side_bar.dart';
 
-
-
 class GameScreen extends StatelessWidget {
   const GameScreen({Key? key}) : super(key: key);
 

@@ -43,8 +43,8 @@ class GhostTearsCard extends StatelessWidget {
           children: [
             playerName != null
                 ? PlayerIcon(player!)
-                : const SizedBox(width: 48.0),
-            SizedBox(width: isCurrentPlayer ? 10.0 : 16.0),
+                : const SizedBox(width: 56.0),
+            const SizedBox(width: 16.0),
             Row(
               children: List.generate(
                 ghosttears.length,
@@ -73,34 +73,40 @@ class PlayerIcon extends StatelessWidget {
       String? _playerName = player.playerName;
       bool? _isPlayerGameOver = player.isPlayerGameOver;
       bool? _isCurrentPlayer = _playerIndex == provider.currentPlayer;
-      bool? _isSelectedPlayer = _playerIndex == provider.selectedPlayer;
+      // bool? _isSelectedPlayer = _playerIndex == provider.selectedPlayer;
 
-      Color _backgroundColor() {
-        if (_isPlayerGameOver == true) {
-          return Colors.black.withOpacity(0.4);
-        }
-        if (_isSelectedPlayer == true) {
-          return SystemTheme.accentColor.accent.toAccentColor();
-        }
-        return Colors.white;
-      }
+      // Color _backgroundColor() {
+      //   if (_isPlayerGameOver == true) {
+      //     return Colors.black.withOpacity(0.4);
+      //   }
+      //   if (_isSelectedPlayer == true) {
+      //     return SystemTheme.accentColor.accent.toAccentColor();
+      //   }
+      //   return Colors.white;
+      // }
 
       return Container(
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: _backgroundColor(),
+          // color: _backgroundColor(),
           border: Border.all(
-            color: _isCurrentPlayer
-                ? SystemTheme.accentColor.accent.toAccentColor()
-                : const Color(0xFFE5E5E5),
-            width: _isCurrentPlayer ? 4.0 : 1.0,
+            color: _isPlayerGameOver!
+                ? Colors.transparent
+                : _isCurrentPlayer
+                    ? SystemTheme.accentColor.accent.toAccentColor()
+                    : SystemTheme.isDarkMode
+                        ? const Color(0xFF5B5B5B)
+                        : const Color(0xFFE5E5E5),
+            width: 4.0,
           ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.1),
-              offset: const Offset(0.0, 0.8),
-            ),
-          ],
+          boxShadow: _isPlayerGameOver
+              ? null
+              : [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.1),
+                    offset: const Offset(0.0, 0.8),
+                  ),
+                ],
         ),
         child: Button(
           style: ButtonStyle(
@@ -117,9 +123,13 @@ class PlayerIcon extends StatelessWidget {
                   : _playerName,
               style: TextStyle(
                 fontWeight: FontWeight.bold,
-                color: _isPlayerGameOver == true
-                    ? Colors.black.withOpacity(0.3)
-                    : Colors.black,
+                color: SystemTheme.isDarkMode
+                    ? _isPlayerGameOver
+                        ? Colors.white.withOpacity(0.3)
+                        : Colors.white
+                    : _isPlayerGameOver
+                        ? Colors.black.withOpacity(0.3)
+                        : Colors.black,
               ),
             ),
           ),
@@ -151,7 +161,7 @@ class GhostLetter extends StatelessWidget {
       width: 68.0,
       height: 68.0,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: SystemTheme.isDarkMode ? const Color(0xFF323232) : Colors.white,
         borderRadius: BorderRadius.circular(4.0),
         border: Border.all(
           color: const Color(0xFF000000).withOpacity(0.08),
@@ -168,11 +178,16 @@ class GhostLetter extends StatelessWidget {
         child: Text(
           letter,
           style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 48.0,
-              color: isPlayerGameOver!
-                  ? Colors.black.withOpacity(0.2)
-                  : Colors.black),
+            fontWeight: FontWeight.bold,
+            fontSize: 48.0,
+            color: SystemTheme.isDarkMode
+                ? isPlayerGameOver!
+                    ? Colors.white.withOpacity(0.3)
+                    : Colors.white
+                : isPlayerGameOver!
+                    ? Colors.black.withOpacity(0.3)
+                    : Colors.black,
+          ),
         ),
       ),
     );
